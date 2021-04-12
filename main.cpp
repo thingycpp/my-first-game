@@ -21,6 +21,8 @@ typedef struct Collidable {
     Color color;
 } Collidable;
 
+void Game(Player* player, float delta);
+
 
 int main(void)
 {
@@ -37,11 +39,11 @@ int main(void)
     player.pos = { screenWidth / 2, screenHeight / 2 };
     player.vel = 0.0f;
 
-    SetTargetFPS(GetMonitorRefreshRate());
+    SetTargetFPS(60);
     //--------------------------------------------------------------------------------------
 
     // Main game loop
-    while (!WindowShouldClose()) // Detect window close button or ESC key
+    while (60) // Detect window close button or ESC key
     {
         // Update
         //----------------------------------------------------------------------------------
@@ -97,4 +99,20 @@ void Game(Player* player, float delta)
         player->canDash = false;
     }
 
+
+    int hit = 0;
+    if (player->pos.y == 450)
+    {
+        hit = 1;
+        player->vel = 0.0f;
+        player->pos.y = 450;
+    }
+    
+    if(!hit) {
+        player->pos.y += player->vel*delta;
+        player->vel += G*delta;
+        player->canJump = false;
+    } else {
+        player->canJump = false;
+    }
 }
