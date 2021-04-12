@@ -21,7 +21,7 @@ typedef struct Player {
     bool canJump;
     bool canDash;
 
-    void HandleMovement(Player* player, float delta, TextureHandler* texHandler, Texture2D* playerTex);
+    void HandleMovement(Player* player, float delta, TextureHandler* texHandler, Texture2D playerTex);
 } Player;
 
 
@@ -54,7 +54,7 @@ int main(void)
     //--------------------------------------------------------------------------------------
 
     // Main game loop
-    while (60) // Detect window close button or ESC key
+    while (!WindowShouldClose()) // Detect window close button or ESC key
     {
         // Update
         //----------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ int main(void)
     return 0;
 }
 
-void Player::HandleMovement(Player* player, float delta, TextureHandler* texHandler, Texture2D* playerTex)
+void Player::HandleMovement(Player* player, float delta, TextureHandler* texHandler, Texture2D playerTex)
 {
     if (IsKeyDown(KEY_A)) {
         player->pos.x -= GROUND_SPD * delta;
@@ -149,5 +149,5 @@ void Game(Player* _player, float _delta, TextureHandler* _texHandler)
 
 
     Texture2D currentPlayerTex = _texHandler->playerIdle;
-    _player->HandleMovement(_player, _delta, _texHandler, &currentPlayerTex);
+    _player->HandleMovement(_player, _delta, _texHandler, currentPlayerTex);
 }
