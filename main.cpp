@@ -15,11 +15,6 @@ typedef struct Player {
     bool canDash;
 } Player;
 
-typedef struct Collidable {
-    Rectangle rec;
-    int blocking;
-    Color color;
-} Collidable;
 
 void Game(Player* player, float delta);
 
@@ -57,7 +52,7 @@ int main(void)
         ClearBackground(GRAY);
         
         Rectangle playBox = { screenWidth / 2, screenHeight / 2, 80, 40 };
-        DrawRectangle(playBox.x, playBox.y, playBox.width, playBox.height, RED);
+        DrawRectangleRec(playBox, RED);
         int mouseX_overPlay = GetMouseX();
         int mouseY_overPlay = GetMouseY();
         if (mouseX_overPlay <= screenWidth / 2 + 40 && mouseX_overPlay >= screenWidth / 2 - 40 && mouseY_overPlay <= screenHeight / 2 + 20 && mouseY_overPlay >= screenHeight / 2 - 20 && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
