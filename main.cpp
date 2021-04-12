@@ -3,6 +3,13 @@ using namespace std;
 
 #include "include/raylib.h"
 
+typedef struct TextureHandler {
+    Texture2D playerIdle;
+    Texture2D playerRight;
+
+    Texture2D grass;
+} TextureHandler;
+
 #define G 2000
 #define GROUND_SPD 800
 #define JUMP_SPD 1000
@@ -13,11 +20,12 @@ typedef struct Player {
     float vel;
     bool canJump;
     bool canDash;
+
+    void HandleMovement(Player* player, float delta, TextureHandler* texHandler, Texture2D* playerTex);
 } Player;
 
 
-void Game(Player* player, float delta);
-
+void Game(Player* player, float delta, TextureHandler* texHandler);
 
 int main(void)
 {
@@ -28,11 +36,19 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "Green Dude");
 
+    TextureHandler texHandler = { 0 };
+    texHandler.playerIdle = LoadTexture("Assets/GD_idle.png");
+    texHandler.playerRight = LoadTexture("Assets/GD_right.png");
+    //Took the grass texture from codergopher's SDL2 tutorial, find him on YT at https://www.youtube.com/channel/UCfiC4q3AahU4Io-s83-CIbQ, hes a pretty cool dude.
+    texHandler.grass = LoadTexture("Assets/grass.png");
+
     Player player = { 0 };
     player.canDash = true;
     player.canJump = false;
     player.pos = { screenWidth / 2, screenHeight / 2 };
     player.vel = 0.0f;
+
+
 
     SetTargetFPS(60);
     //--------------------------------------------------------------------------------------
@@ -57,7 +73,7 @@ int main(void)
         int mouseY_overPlay = GetMouseY();
         if (mouseX_overPlay <= screenWidth / 2 + 40 && mouseX_overPlay >= screenWidth / 2 - 40 && mouseY_overPlay <= screenHeight / 2 + 20 && mouseY_overPlay >= screenHeight / 2 - 20 && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            Game(&player, deltaTime);
+            Game(&player, deltaTime, &texHandler);
         }
 
         EndDrawing();
@@ -72,15 +88,17 @@ int main(void)
     return 0;
 }
 
-void Game(Player* player, float delta)
+void Player::HandleMovement(Player* player, float delta, TextureHandler* texHandler, Texture2D* playerTex)
 {
-    // Game Shenanigans
-    ClearBackground(RAYWHITE);
-    Rectangle playerRec = { player->pos.x, player->pos.y, 40, 40 };
-    DrawRectangleRec(playerRec, GREEN);
+    if (IsKeyDown(KEY_A)) {
+        player->pos.x -= GROUND_SPD * delta;
+        playerTex = texHandler->playerIdle;
+    }
 
-    if (IsKeyDown(KEY_A)) player->pos.x -= GROUND_SPD * delta;
-    if (IsKeyDown(KEY_D)) player->pos.x += GROUND_SPD * delta;
+    if (IsKeyDown(KEY_D)) {
+        player->pos.x += GROUND_SPD * delta;
+        playerTex = texHandler->playerRight;
+    }
 
     if (IsKeyDown(KEY_SPACE) && player->canJump)
     {
@@ -88,12 +106,19 @@ void Game(Player* player, float delta)
         player->canJump = false;
     }
 
-    if (IsKeyDown(KEY_D) && IsKeyDown(KEY_F) && player->canDash)
+    if (IsKeyDown(KEY_D) && IsMouseButtonDown(MOUSE_MIDDLE_BUTTON) && player->canDash)
     {
-        player->pos.x += DASH_SPD*delta;
+        player->pos.x += DASH_SPD * delta;
+        playerTex = texHandler->playerRight;
         player->canDash = false;
     }
 
+    if (IsKeyDown(KEY_A) && IsMouseButtonDown(MOUSE_MIDDLE_BUTTON) && player->canDash)
+    {
+        player->pos.x -= DASH_SPD * delta;
+        playerTex = texHandler->playerIdle;
+        player->canDash = false;
+    }
 
     int hit = 0;
     if (player->pos.y == 450)
@@ -102,12 +127,27 @@ void Game(Player* player, float delta)
         player->vel = 0.0f;
         player->pos.y = 450;
     }
-    
-    if(!hit) {
-        player->pos.y += player->vel*delta;
-        player->vel += G*delta;
-        player->canJump = false;
-    } else {
+
+    if (!hit) {
+        player->pos.y += player->vel * delta;
+        player->vel += G * delta;
         player->canJump = false;
     }
+    else {
+        player->canJump = false;
+        player->canDash = false;
+    }
+
+    Vector2 playerTexPos = { player->pos.x, player->pos.y };
+    DrawTextureEx(playerTex, playerTexPos, 0.0f, 40, WHITE);
+}
+
+void Game(Player* _player, float _delta, TextureHandler* _texHandler)
+{
+    // Game Shenanigans
+    ClearBackground(RAYWHITE);
+
+
+    Texture2D currentPlayerTex = _texHandler->playerIdle;
+    _player->HandleMovement(_player, _delta, _texHandler, &currentPlayerTex);
 }
