@@ -25,8 +25,15 @@ typedef struct Player {
     void HandleMovement(Player* player, float delta, TextureHandler* texHandler);
 } Player;
 
+typedef struct FireballEnemy {
+    Vector2 pos;
+    float vel;
+    bool isExploaded;
 
-void Game(Player* player, float delta, TextureHandler* texHandler);
+    void HandleFireball(float delta, TextureHandler* texHandler);
+} FireballEnemy;
+
+void Game(Player *_player, FireballEnemy *_fireEnemy, float _delta, TextureHandler *_texHandler);
 
 int main(void)
 {
@@ -43,6 +50,11 @@ int main(void)
     //Took the grass texture from codergopher's SDL2 tutorial, find him on YT at https://www.youtube.com/channel/UCfiC4q3AahU4Io-s83-CIbQ, hes a pretty cool dude.
     texHandler.grass = LoadTexture("Assets/grass.png");
     texHandler.playerTex = texHandler.playerIdle;
+
+    FireballEnemy fireEnem = { 0 };
+    fireEnem.isExploaded = false;
+    fireEnem.pos = { 2000, 2000 };
+    fireEnem.vel = 0.0f;
 
     Player player = { 0 };
     player.canDash = true;
@@ -75,7 +87,7 @@ int main(void)
         int mouseY_overPlay = GetMouseY();
         if (mouseX_overPlay <= screenWidth / 2 + 40 && mouseX_overPlay >= screenWidth / 2 - 40 && mouseY_overPlay <= screenHeight / 2 + 20 && mouseY_overPlay >= screenHeight / 2 - 20 && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
-            Game(&player, deltaTime, &texHandler);
+            Game(&player, &fireEnem, deltaTime, &texHandler);
         }
 
         EndDrawing();
@@ -88,6 +100,11 @@ int main(void)
     //--------------------------------------------------------------------------------------
 
     return 0;
+}
+
+void FireballEnemy::HandleFireball(float delta, TextureHandler* texHandler)
+{
+    // fireball code
 }
 
 void Player::HandleMovement(Player* player, float delta, TextureHandler* texHandler)
@@ -144,11 +161,12 @@ void Player::HandleMovement(Player* player, float delta, TextureHandler* texHand
     DrawTextureEx(texHandler->playerTex, playerTexPos, 0.0f, 40, WHITE);
 }
 
-void Game(Player* _player, float _delta, TextureHandler* _texHandler)
+void Game(Player* _player, FireballEnemy* _fireEnemy, float _delta, TextureHandler* _texHandler)
 {
     // Game Shenanigans
     ClearBackground(RAYWHITE);
 
 
     _player->HandleMovement(_player, _delta, _texHandler);
+    _fireEnemy->HandleFireball(_delta, _texHandler);
 }
