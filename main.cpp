@@ -4,6 +4,7 @@ using namespace std;
 #include "include/raylib.h"
 
 typedef struct TextureHandler {
+	Texture2D p_currentTex;
     Texture2D playerIdle;
     Texture2D playerRight;
 
@@ -88,16 +89,16 @@ int main(void)
     return 0;
 }
 
-void Player::HandleMovement(Player* player, float delta, TextureHandler* texHandler, Texture2D playerTex)
+void Player::HandleMovement(Player* player, float delta, TextureHandler* texHandler)
 {
     if (IsKeyDown(KEY_A)) {
         player->pos.x -= GROUND_SPD * delta;
-        playerTex = texHandler->playerIdle;
+        texHandler->p_currentTex = texHandler->playerIdle;
     }
 
     if (IsKeyDown(KEY_D)) {
         player->pos.x += GROUND_SPD * delta;
-        playerTex = texHandler->playerRight;
+        texHandler->p_currentTex = texHandler->playerRight;
     }
 
     if (IsKeyDown(KEY_SPACE) && player->canJump)
@@ -109,14 +110,14 @@ void Player::HandleMovement(Player* player, float delta, TextureHandler* texHand
     if (IsKeyDown(KEY_D) && IsMouseButtonDown(MOUSE_MIDDLE_BUTTON) && player->canDash)
     {
         player->pos.x += DASH_SPD * delta;
-        playerTex = texHandler->playerRight;
+        texHandler->p_currentTex = texHandler->playerRight;
         player->canDash = false;
     }
 
     if (IsKeyDown(KEY_A) && IsMouseButtonDown(MOUSE_MIDDLE_BUTTON) && player->canDash)
     {
         player->pos.x -= DASH_SPD * delta;
-        playerTex = texHandler->playerIdle;
+        texHandler->p_currentTex = texHandler->playerIdle;
         player->canDash = false;
     }
 
@@ -139,7 +140,7 @@ void Player::HandleMovement(Player* player, float delta, TextureHandler* texHand
     }
 
     Vector2 playerTexPos = { player->pos.x, player->pos.y };
-    DrawTextureEx(playerTex, playerTexPos, 0.0f, 40, WHITE);
+    DrawTextureEx(texHandler->p_currentTex, playerTexPos, 0.0f, 40, WHITE);
 }
 
 void Game(Player* _player, float _delta, TextureHandler* _texHandler)
@@ -147,7 +148,5 @@ void Game(Player* _player, float _delta, TextureHandler* _texHandler)
     // Game Shenanigans
     ClearBackground(RAYWHITE);
 
-
-    Texture2D currentPlayerTex = _texHandler->playerIdle;
-    _player->HandleMovement(_player, _delta, _texHandler, currentPlayerTex);
+    _player->HandleMovement(_player, _delta, _texHandler);
 }
