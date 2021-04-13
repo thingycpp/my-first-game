@@ -4,7 +4,7 @@ using namespace std;
 #include "include/raylib.h"
 
 typedef struct TextureHandler {
-	Texture2D p_currentTex;
+    Texture2D playerTex;
     Texture2D playerIdle;
     Texture2D playerRight;
 
@@ -22,7 +22,7 @@ typedef struct Player {
     bool canJump;
     bool canDash;
 
-    void HandleMovement(Player* player, float delta, TextureHandler* texHandler, Texture2D playerTex);
+    void HandleMovement(Player* player, float delta, TextureHandler* texHandler);
 } Player;
 
 
@@ -42,6 +42,7 @@ int main(void)
     texHandler.playerRight = LoadTexture("Assets/GD_right.png");
     //Took the grass texture from codergopher's SDL2 tutorial, find him on YT at https://www.youtube.com/channel/UCfiC4q3AahU4Io-s83-CIbQ, hes a pretty cool dude.
     texHandler.grass = LoadTexture("Assets/grass.png");
+    texHandler.playerTex = texHandler.playerIdle;
 
     Player player = { 0 };
     player.canDash = true;
@@ -93,12 +94,12 @@ void Player::HandleMovement(Player* player, float delta, TextureHandler* texHand
 {
     if (IsKeyDown(KEY_A)) {
         player->pos.x -= GROUND_SPD * delta;
-        texHandler->p_currentTex = texHandler->playerIdle;
+        texHandler->playerTex = texHandler->playerIdle;
     }
 
     if (IsKeyDown(KEY_D)) {
         player->pos.x += GROUND_SPD * delta;
-        texHandler->p_currentTex = texHandler->playerRight;
+        texHandler->playerTex = texHandler->playerRight;
     }
 
     if (IsKeyDown(KEY_SPACE) && player->canJump)
@@ -110,14 +111,14 @@ void Player::HandleMovement(Player* player, float delta, TextureHandler* texHand
     if (IsKeyDown(KEY_D) && IsMouseButtonDown(MOUSE_MIDDLE_BUTTON) && player->canDash)
     {
         player->pos.x += DASH_SPD * delta;
-        texHandler->p_currentTex = texHandler->playerRight;
+        texHandler->playerTex = texHandler->playerRight;
         player->canDash = false;
     }
 
     if (IsKeyDown(KEY_A) && IsMouseButtonDown(MOUSE_MIDDLE_BUTTON) && player->canDash)
     {
         player->pos.x -= DASH_SPD * delta;
-        texHandler->p_currentTex = texHandler->playerIdle;
+        texHandler->playerTex = texHandler->playerIdle;
         player->canDash = false;
     }
 
@@ -140,13 +141,14 @@ void Player::HandleMovement(Player* player, float delta, TextureHandler* texHand
     }
 
     Vector2 playerTexPos = { player->pos.x, player->pos.y };
-    DrawTextureEx(texHandler->p_currentTex, playerTexPos, 0.0f, 40, WHITE);
+    DrawTextureEx(texHandler->playerTex, playerTexPos, 0.0f, 40, WHITE);
 }
 
 void Game(Player* _player, float _delta, TextureHandler* _texHandler)
 {
     // Game Shenanigans
     ClearBackground(RAYWHITE);
+
 
     _player->HandleMovement(_player, _delta, _texHandler);
 }
