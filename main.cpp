@@ -82,7 +82,7 @@ int main(void)
         ClearBackground(GRAY);
         
         Rectangle playBox = { screenWidth / 2, screenHeight / 2, 80, 40 };
-        DrawRectangleRec(playBox, RED);
+        DrawRectangleRec(playBox, GREEN);
         int mouseX_overPlay = GetMouseX();
         int mouseY_overPlay = GetMouseY();
         if (mouseX_overPlay <= screenWidth / 2 + 40 && mouseX_overPlay >= screenWidth / 2 - 40 && mouseY_overPlay <= screenHeight / 2 + 20 && mouseY_overPlay >= screenHeight / 2 - 20 && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
