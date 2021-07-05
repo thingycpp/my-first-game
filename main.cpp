@@ -1,5 +1,7 @@
 #include "Player.h"
 
+bool inGame = false;
+
 typedef struct FireballEnemy {
     Vector2 pos;
     float vel;
@@ -57,13 +59,21 @@ int main(void)
 
         ClearBackground(GRAY);
         
-        Rectangle playBox = { screenWidth / 2, screenHeight / 2, 80, 40 };
+        Rectangle playBox = { screenWidth / 2-50, screenHeight / 2-50, 100, 35 };
         DrawRectangleRec(playBox, GREEN);
         int mouseX_overPlay = GetMouseX();
         int mouseY_overPlay = GetMouseY();
-        if (mouseX_overPlay <= screenWidth / 2 + 40 && mouseX_overPlay >= screenWidth / 2 - 40 && mouseY_overPlay <= screenHeight / 2 + 20 && mouseY_overPlay >= screenHeight / 2 - 20 && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+
+        if (mouseX_overPlay <= screenWidth / 2 + 50 && mouseX_overPlay >= screenWidth / 2 && mouseY_overPlay <= screenHeight / 2 + 35 && mouseY_overPlay >= screenHeight / 2 && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
+            inGame = true;
+            
+        }
+
+        if (inGame) {
+
             Game(&player, &fireEnem, deltaTime, &texHandler);
+
         }
 
         EndDrawing();
@@ -116,7 +126,7 @@ void Player::HandleMovement(Player* player, float delta, TextureHandler* texHand
     }
 
     int onFloor = 0;
-    if (player->pos.y == 430)
+    if (player->pos.y == 400)
     {
         onFloor = 1;
         player->vel = 0.0f;
