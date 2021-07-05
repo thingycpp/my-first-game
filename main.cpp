@@ -1,29 +1,4 @@
-#include <iostream>
-using namespace std;
-
-#include "include/raylib.h"
-
-typedef struct TextureHandler {
-    Texture2D playerTex;
-    Texture2D playerIdle;
-    Texture2D playerRight;
-
-    Texture2D grass;
-} TextureHandler;
-
-#define G 2000
-#define GROUND_SPD 800
-#define JUMP_SPD 1000
-#define DASH_SPD 1200
-
-typedef struct Player {
-    Vector2 pos;
-    float vel;
-    bool canJump;
-    bool canDash;
-
-    void HandleMovement(Player* player, float delta, TextureHandler* texHandler);
-} Player;
+#include "Player.h"
 
 typedef struct FireballEnemy {
     Vector2 pos;
@@ -44,7 +19,7 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "Green Dude");
 
-    TextureHandler texHandler = { 0 };
+    TextureHandler texHandler = {0};
     texHandler.playerIdle = LoadTexture("Assets/GD_idle.png");
     texHandler.playerRight = LoadTexture("Assets/GD_right.png");
     //Took the grass texture from codergopher's SDL2 tutorial, find him on YT at https://www.youtube.com/channel/UCfiC4q3AahU4Io-s83-CIbQ, hes a pretty cool dude.
@@ -73,6 +48,7 @@ int main(void)
         // Update
         //----------------------------------------------------------------------------------
         float deltaTime = GetFrameTime();
+
 
 
         // Draw
@@ -139,15 +115,15 @@ void Player::HandleMovement(Player* player, float delta, TextureHandler* texHand
         player->canDash = false;
     }
 
-    int hit = 0;
-    if (player->pos.y == 450)
+    int onFloor = 0;
+    if (player->pos.y == 430)
     {
-        hit = 1;
+        onFloor = 1;
         player->vel = 0.0f;
-        player->pos.y = 450;
+        player->pos.y = 430;
     }
 
-    if (!hit) {
+    if (!onFloor) {
         player->pos.y += player->vel * delta;
         player->vel += G * delta;
         player->canJump = false;
